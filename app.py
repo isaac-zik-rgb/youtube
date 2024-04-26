@@ -9,6 +9,12 @@ import os
 app = Flask(__name__)
 
 CORS(app)
+
+@app.route('/')
+def index():
+    return 'Hello, World!'
+
+
 @app.route('/download-youtube-video', methods=['POST'])
 def download_youtube_video():
     # Get the video ID from the request
