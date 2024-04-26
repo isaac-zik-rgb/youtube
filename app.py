@@ -59,4 +59,4 @@ def youtube_video_id(video_id):
     return encoded_file_name
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+    app.run(debug=False, port=8080)
