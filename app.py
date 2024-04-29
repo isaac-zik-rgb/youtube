@@ -10,11 +10,6 @@ app = Flask(__name__)
 
 CORS(app)
 
-@app.route('/', methods=['GET'])
-def index():
-    return 'Hello, World!'
-
-
 @app.route('/download-youtube-video', methods=['POST'])
 def download_youtube_video():
     # Get the video ID from the request
@@ -65,4 +60,4 @@ def youtube_video_id(video_id):
     return encoded_file_name
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+    app.run(debug=True)
