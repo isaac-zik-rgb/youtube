@@ -10,6 +10,10 @@ app = Flask(__name__)
 
 CORS(app)
 
+@app.route('/get', methods=['GET'])
+def get():
+    return jsonify({'success': True, 'message': 'Hello World!'})
+
 @app.route('/download-youtube-video', methods=['POST'])
 def download_youtube_video():
     # Get the video ID from the request
