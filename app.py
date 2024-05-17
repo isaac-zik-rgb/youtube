@@ -67,7 +67,7 @@
 #     app.run(debug=True)
 
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from pytube import YouTube
 from flask_cors import CORS
 from urllib.parse import quote
@@ -86,7 +86,7 @@ S3_REGION = 'US West (Oregon) us-west-2'
 s3_client = boto3.client('s3')
 
 # Get video directory from environment variable or use a default value
-VIDEO_DIR = os.getenv('VIDEO_DIR', '/tmp/youtube_videos')
+VIDEO_DIR = "~/YoutubeVideos"
 
 @app.route('/')
 def home():
@@ -101,14 +101,20 @@ def download_youtube_video():
         if not os.path.exists(VIDEO_DIR):
             os.makedirs(VIDEO_DIR)
         
-        encoded_file_name = youtube_video_id(video_id)
-        file_path = os.path.join(VIDEO_DIR, encoded_file_name + '.mp4')
+        # encoded_file_name = youtube_video_id(video_id)
+        # file_path = os.path.join(VIDEO_DIR, encoded_file_name + '.mp4')
         
         # Upload the file to S3
-        s3_url = upload_to_s3(file_path, encoded_file_name + '.mp4')
+        # s3_url = upload_to_s3(file_path, encoded_file_name + '.mp4')
         
-        # Return the S3 URL
-        return jsonify({'success': True, 'url': s3_url})
+        # # Return the S3 URL
+        # return jsonify({'success': True, 'url': s3_url})
+
+        encoded_file_name = youtube_video_id(video_id)
+        
+        file_path = os.path.join(VIDEO_DIR, encoded_file_name + '.mp4')
+        
+        return send_from_directory(VIDEO_DIR, encoded_file_name + '.mp4', as_attachment=True)
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)})
 
@@ -126,15 +132,15 @@ def youtube_video_id(video_id):
     
     return encoded_file_name
 
-def upload_to_s3(file_path, file_name):
-    try:
-        s3_client.upload_file(file_path, S3_BUCKET, file_name)
-        s3_url = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/{file_name}"
-        return s3_url
-    except FileNotFoundError:
-        raise Exception("The file was not found")
-    except NoCredentialsError:
-        raise Exception("Credentials not available")
+# def upload_to_s3(file_path, file_name):
+#     try:
+#         s3_client.upload_file(file_path, S3_BUCKET, file_name)
+#         s3_url = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/{file_name}"
+#         return s3_url
+#     except FileNotFoundError:
+#         raise Exception("The file was not found")
+#     except NoCredentialsError:
+#         raise Exception("Credentials not available")
 
 if __name__ == '__main__':
     app.run(debug=True)
